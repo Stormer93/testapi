@@ -1,149 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Numbers API with Delay</title>
-    <!-- Bootstrap CSS via CDN -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+<head>
+  <meta charset="UTF-8" />
+  <title>Simple API Example</title>
+  <!-- Bootstrap CSS via CDN (optional) -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+  />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .hero {
+      background-color: #18bc9c;
+      color: #fff;
+      padding: 50px 0;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0;
+    }
+    /* Container for input, button, and output in a single row */
+    .io-row {
+      display: flex;
+      align-items: center;
+      justify-content: center; /* centers them horizontally */
+      margin-top: 40px;
+      gap: 1rem; /* space between items */
+    }
+    #inputField {
+      max-width: 200px;
+    }
+    #apiButton {
+      width: 120px;
+    }
+    #responseContainer {
+      min-width: 100px;
+      background: #f3f3f3;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <!-- Hero Header -->
+  <header class="hero">
+    <h1>Simple API Example</h1>
+    <p>Input on the left, Button in the middle, Output on the right</p>
+  </header>
+
+  <!-- Single-row layout for input, button, and output -->
+  <div class="container io-row">
+    <input
+      type="text"
+      id="inputField"
+      class="form-control"
+      placeholder="e.g., 2"
     />
-    <style>
-      /* CUSTOM STYLES */
-      body {
-        font-family: Arial, sans-serif;
+    <button
+      id="apiButton"
+      class="btn btn-primary"
+    >
+      Run API
+    </button>
+    <div id="responseContainer"></div>
+  </div>
+
+  <!-- Bootstrap JS (optional) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    document.getElementById('apiButton').addEventListener('click', () => {
+      const responseContainer = document.getElementById('responseContainer');
+      responseContainer.textContent = ''; // Clear any previous result
+
+      // 1. Get the value from the text input
+      const userInput = document.getElementById('inputField').value.trim();
+      if (!userInput) {
+        alert('Please enter a number!');
+        return;
+      }
+      // Convert to a number
+      const numericInput = parseFloat(userInput);
+      if (isNaN(numericInput)) {
+        alert('Invalid number: ' + userInput);
+        return;
       }
 
-      .hero {
-        background-color: #18bc9c;
-        color: #fff;
-        padding: 50px 0;
-        text-align: center;
-      }
-
-      .hero h1 {
-        font-size: 2.5rem;
-        margin-bottom: 0;
-      }
-
-      .content-container {
-        margin-top: 40px;
-      }
-
-      label,
-      input,
-      button {
-        display: block;
-        margin: 15px 0;
-      }
-
-      #responseContainer {
-        white-space: pre-wrap; /* Preserve line breaks if needed */
-        background: #f3f3f3;
-        padding: 20px;
-        border-radius: 5px;
-        margin-top: 20px;
-      }
-
-      /* Button styling */
-      #apiButton {
-        width: 200px;
-      }
-
-      /* Spinner container */
-      #spinnerContainer {
-        display: none; /* hidden by default */
-        text-align: center;
-        margin-top: 20px;
-      }
-    </style>
-  </head>
-  <body>
-
-    <!-- Hero Header -->
-    <header class="hero">
-      <h1>Simple Numbers API Example</h1>
-      <p>Get a fun fact about any number, with a 3-second delay</p>
-    </header>
-
-    <!-- MAIN CONTENT AREA -->
-    <div class="container content-container">
-
-      <!-- Input field and button -->
-      <label for="inputField">Enter a number (1-200):</label>
-      <input
-        type="text"
-        id="inputField"
-        class="form-control"
-        placeholder="e.g., 42"
-        style="max-width: 300px;"
-      />
-      <button
-        id="apiButton"
-        class="btn btn-primary"
-      >
-        Get a Number Fact
-      </button>
-
-      <!-- Spinner (Bootstrap) -->
-      <div id="spinnerContainer">
-        <div class="spinner-border" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
-
-      <!-- Container to display the API response -->
-      <div id="responseContainer"></div>
-
-    </div>
-
-    <!-- Optional Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-      document.getElementById('apiButton').addEventListener('click', () => {
-        const responseContainer = document.getElementById('responseContainer');
-        const spinnerContainer = document.getElementById('spinnerContainer');
-
-        // Clear any previous result and show the spinner
-        responseContainer.textContent = '';
-        spinnerContainer.style.display = 'block';
-
-        // 1. Get the value from the text input
-        const userInput = document.getElementById('inputField').value;
-        if (!userInput) {
-          alert('Please enter a number!');
-          // Hide the spinner again if no input is provided
-          spinnerContainer.style.display = 'none';
-          return;
-        }
-
-        // 2. Prepare the Numbers API URL for JSON response
-        const apiUrl = `http://numbersapi.com/${userInput}?json`;
-
-        // 3. Fetch from the Numbers API
-        fetch(apiUrl)
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error('Network response was not OK: ' + response.status);
-            }
-            return response.json();
-          })
-          .then((data) => {
-            // 4. Delay the display of the result by 3 seconds
-            setTimeout(() => {
-              spinnerContainer.style.display = 'none'; // hide spinner
-              responseContainer.textContent = data.text; // show the fact
-            }, 3000); // 3000 ms = 3 seconds
-          })
-          .catch((error) => {
-            console.error('Error:', error);
-            setTimeout(() => {
-              spinnerContainer.style.display = 'none';
-              responseContainer.textContent = 'An error occurred: ' + error.message;
-            }, 3000);
-          });
-      });
-    </script>
-  </body>
+      // 2. MindStudio API call (with your full API key)
+      fetch('https://api.mindstudio.ai/developer/v2/workers/run', {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer skdQ3Zz6eTW8kEYIcIauWCWSa4qg6a0yY4GQaGuse6CeuKU2w80kukcoUMWQ202EUWYEWSUgmkUCEywOOiqmKssg',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          workerId: 'b62f2f83-fb37-433e-9143-bf208815efa9',
+          flow: 'Main.flow', // only if needed
+          variables: {
+            number: numericInput
+          }
+        }),
+      })
+        .then(async (response) => {
+          const rawBody = await response.text();
+          if (!response.ok) {
+            console.error('Response status:', response.status);
+            console.error('Response body:', rawBody);
+            throw new Error('Network response was not OK: ' + response.status);
+          }
+          return JSON.parse(rawBody);
+        })
+        .then((data) => {
+          // 3. Show only the final numeric result: data.result.result.result
+          const finalNumber = data?.result?.result?.result;
+          responseContainer.textContent = finalNumber ?? 'No result found!';
+        })
+        .catch((error) => {
+          responseContainer.textContent = 'An error occurred: ' + error.message;
+        });
+    });
+  </script>
+</body>
 </html>
