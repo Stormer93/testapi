@@ -1,64 +1,127 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Simple API Example</title>
+    <title>Simple Numbers API Example</title>
+    <!-- Optional: Bootstrap CSS for nicer styling -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
     <style>
+      /* CUSTOM STYLES */
       body {
         font-family: Arial, sans-serif;
-        margin: 50px;
       }
-      label, input, button {
+
+      /* Teal Hero Header (similar style as before) */
+      .hero {
+        background-color: #18bc9c;
+        color: #fff;
+        padding: 50px 0;
+        text-align: center;
+      }
+
+      .hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0;
+      }
+
+      /* Main container spacing */
+      .content-container {
+        margin-top: 40px;
+      }
+
+      /* Spacing for label, input, button */
+      label,
+      input,
+      button {
         display: block;
-        margin: 10px 0;
+        margin: 15px 0;
       }
+
+      /* Response box */
       #responseContainer {
-        margin-top: 20px;
-        white-space: pre-wrap; /* Preserve formatting when showing JSON */
+        white-space: pre-wrap; /* Preserve line breaks if needed */
         background: #f3f3f3;
-        padding: 10px;
+        padding: 20px;
+        border-radius: 5px;
+        margin-top: 20px;
+      }
+
+      /* Make the button more "Bootstrap-y" */
+      #apiButton {
+        width: 200px;
       }
     </style>
   </head>
   <body>
-    <h1>Simple API Example</h1>
-    
-    <!-- Input field and button -->
-    <label for="inputField">Enter a number (1-200):</label>
-    <input type="text" id="inputField" />
-    <button id="apiButton">Send to API</button>
 
-    <!-- Container to display the API response -->
-    <div id="responseContainer"></div>
+    <!-- Hero Header -->
+    <header class="hero">
+      <h1>Simple Numbers API Example</h1>
+      <p>Get a fun fact about any number!</p>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="container content-container">
+
+      <!-- Input field and button -->
+      <label for="inputField">Enter a number (1-200):</label>
+      <input
+        type="text"
+        id="inputField"
+        class="form-control"
+        placeholder="e.g., 42"
+        style="max-width: 300px;"
+      />
+      <button
+        id="apiButton"
+        class="btn btn-primary"
+      >
+        Get a Number Fact
+      </button>
+
+      <!-- Container to display the API response -->
+      <div id="responseContainer"></div>
+
+    </div>
+
+    <!-- Optional Bootstrap JS (only needed if using interactive features like modals) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-      // In this example, we will make a simple GET request to a placeholder API:
-      // https://jsonplaceholder.typicode.com/todos/ (which returns data about “to-dos”).
-      // If you have your own API, replace the endpoint URL and parameters accordingly.
-
+      // Listen for click events on the button
       document.getElementById('apiButton').addEventListener('click', () => {
         // 1. Get the value from the text input
         const userInput = document.getElementById('inputField').value;
 
-        // 2. Prepare the API URL (for demonstration, we’ll use a GET endpoint)
-        //    If you need a POST request, you can change `method: 'POST'` and add a body.
-        const apiUrl = `https://jsonplaceholder.typicode.com/todos/${userInput}`;
+        // If there's no input, show an alert (or handle it gracefully)
+        if (!userInput) {
+          alert('Please enter a number!');
+          return;
+        }
 
-        // 3. Use fetch() to send the request
+        // 2. Prepare the Numbers API URL with JSON response
+        // Adding "?json" returns data as JSON, which includes "text", "number", etc.
+        const apiUrl = `http://numbersapi.com/${userInput}?json`;
+
+        // 3. Use fetch() to send the request to the Numbers API
         fetch(apiUrl)
           .then((response) => {
             if (!response.ok) {
               throw new Error('Network response was not OK: ' + response.status);
             }
-            return response.json();
+            return response.json(); // parse JSON
           })
           .then((data) => {
-            // 4. Display the JSON response on the page
+            // 4. Display the fact on the page
             const responseContainer = document.getElementById('responseContainer');
-            responseContainer.textContent = JSON.stringify(data, null, 2);
+            // "data.text" contains the fun fact about the number
+            responseContainer.textContent = data.text;
           })
           .catch((error) => {
-            // Handle errors (e.g., invalid input or network issues)
+            // Handle errors (e.g., invalid input, network issues)
             console.error('Error:', error);
             const responseContainer = document.getElementById('responseContainer');
             responseContainer.textContent = 'An error occurred: ' + error.message;
