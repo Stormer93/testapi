@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Simple API Example</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 50px;
+      }
+      label, input, button {
+        display: block;
+        margin: 10px 0;
+      }
+      #responseContainer {
+        margin-top: 20px;
+        white-space: pre-wrap; /* Preserve formatting when showing JSON */
+        background: #f3f3f3;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Simple API Example</h1>
+    
+    <!-- Input field and button -->
+    <label for="inputField">Enter a number (1-200):</label>
+    <input type="text" id="inputField" />
+    <button id="apiButton">Send to API</button>
+
+    <!-- Container to display the API response -->
+    <div id="responseContainer"></div>
+
+    <script>
+      // In this example, we will make a simple GET request to a placeholder API:
+      // https://jsonplaceholder.typicode.com/todos/ (which returns data about “to-dos”).
+      // If you have your own API, replace the endpoint URL and parameters accordingly.
+
+      document.getElementById('apiButton').addEventListener('click', () => {
+        // 1. Get the value from the text input
+        const userInput = document.getElementById('inputField').value;
+
+        // 2. Prepare the API URL (for demonstration, we’ll use a GET endpoint)
+        //    If you need a POST request, you can change `method: 'POST'` and add a body.
+        const apiUrl = `https://jsonplaceholder.typicode.com/todos/${userInput}`;
+
+        // 3. Use fetch() to send the request
+        fetch(apiUrl)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Network response was not OK: ' + response.status);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // 4. Display the JSON response on the page
+            const responseContainer = document.getElementById('responseContainer');
+            responseContainer.textContent = JSON.stringify(data, null, 2);
+          })
+          .catch((error) => {
+            // Handle errors (e.g., invalid input or network issues)
+            console.error('Error:', error);
+            const responseContainer = document.getElementById('responseContainer');
+            responseContainer.textContent = 'An error occurred: ' + error.message;
+          });
+      });
+    </script>
+  </body>
+</html>
