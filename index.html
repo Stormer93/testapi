@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Simple Numbers API Example</title>
-    <!-- Optional: Bootstrap CSS for nicer styling -->
+    <title>Numbers API with Delay</title>
+    <!-- Bootstrap CSS via CDN -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
@@ -14,7 +14,6 @@
         font-family: Arial, sans-serif;
       }
 
-      /* Teal Hero Header (similar style as before) */
       .hero {
         background-color: #18bc9c;
         color: #fff;
@@ -27,12 +26,10 @@
         margin-bottom: 0;
       }
 
-      /* Main container spacing */
       .content-container {
         margin-top: 40px;
       }
 
-      /* Spacing for label, input, button */
       label,
       input,
       button {
@@ -40,7 +37,6 @@
         margin: 15px 0;
       }
 
-      /* Response box */
       #responseContainer {
         white-space: pre-wrap; /* Preserve line breaks if needed */
         background: #f3f3f3;
@@ -49,9 +45,16 @@
         margin-top: 20px;
       }
 
-      /* Make the button more "Bootstrap-y" */
+      /* Button styling */
       #apiButton {
         width: 200px;
+      }
+
+      /* Spinner container */
+      #spinnerContainer {
+        display: none; /* hidden by default */
+        text-align: center;
+        margin-top: 20px;
       }
     </style>
   </head>
@@ -60,7 +63,7 @@
     <!-- Hero Header -->
     <header class="hero">
       <h1>Simple Numbers API Example</h1>
-      <p>Get a fun fact about any number!</p>
+      <p>Get a fun fact about any number, with a 3-second delay</p>
     </header>
 
     <!-- MAIN CONTENT AREA -->
@@ -82,49 +85,63 @@
         Get a Number Fact
       </button>
 
+      <!-- Spinner (Bootstrap) -->
+      <div id="spinnerContainer">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+
       <!-- Container to display the API response -->
       <div id="responseContainer"></div>
 
     </div>
 
-    <!-- Optional Bootstrap JS (only needed if using interactive features like modals) -->
+    <!-- Optional Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-      // Listen for click events on the button
       document.getElementById('apiButton').addEventListener('click', () => {
+        const responseContainer = document.getElementById('responseContainer');
+        const spinnerContainer = document.getElementById('spinnerContainer');
+
+        // Clear any previous result and show the spinner
+        responseContainer.textContent = '';
+        spinnerContainer.style.display = 'block';
+
         // 1. Get the value from the text input
         const userInput = document.getElementById('inputField').value;
-
-        // If there's no input, show an alert (or handle it gracefully)
         if (!userInput) {
           alert('Please enter a number!');
+          // Hide the spinner again if no input is provided
+          spinnerContainer.style.display = 'none';
           return;
         }
 
-        // 2. Prepare the Numbers API URL with JSON response
-        // Adding "?json" returns data as JSON, which includes "text", "number", etc.
+        // 2. Prepare the Numbers API URL for JSON response
         const apiUrl = `http://numbersapi.com/${userInput}?json`;
 
-        // 3. Use fetch() to send the request to the Numbers API
+        // 3. Fetch from the Numbers API
         fetch(apiUrl)
           .then((response) => {
             if (!response.ok) {
               throw new Error('Network response was not OK: ' + response.status);
             }
-            return response.json(); // parse JSON
+            return response.json();
           })
           .then((data) => {
-            // 4. Display the fact on the page
-            const responseContainer = document.getElementById('responseContainer');
-            // "data.text" contains the fun fact about the number
-            responseContainer.textContent = data.text;
+            // 4. Delay the display of the result by 3 seconds
+            setTimeout(() => {
+              spinnerContainer.style.display = 'none'; // hide spinner
+              responseContainer.textContent = data.text; // show the fact
+            }, 3000); // 3000 ms = 3 seconds
           })
           .catch((error) => {
-            // Handle errors (e.g., invalid input, network issues)
             console.error('Error:', error);
-            const responseContainer = document.getElementById('responseContainer');
-            responseContainer.textContent = 'An error occurred: ' + error.message;
+            setTimeout(() => {
+              spinnerContainer.style.display = 'none';
+              responseContainer.textContent = 'An error occurred: ' + error.message;
+            }, 3000);
           });
       });
     </script>
