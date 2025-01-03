@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Simple API Example</title>
+  <title>Eva je najbolja!</title>
   <!-- Bootstrap CSS via CDN (optional) -->
   <link
     rel="stylesheet"
@@ -17,80 +17,108 @@
       color: #fff;
       padding: 50px 0;
       text-align: center;
+      margin-bottom: 40px;
     }
     .hero h1 {
       font-size: 2.5rem;
       margin-bottom: 0;
     }
-    /* Container for input, button, and output in a single row */
     .io-row {
       display: flex;
       align-items: center;
-      justify-content: center; /* centers them horizontally */
-      margin-top: 40px;
-      gap: 1rem; /* space between items */
+      gap: 1rem;
+      margin-top: 20px;
+      justify-content: flex-start;
     }
-    #inputField {
+    .io-row input.form-control {
       max-width: 200px;
     }
-    #apiButton {
+    .io-row button {
       width: 120px;
     }
-    #responseContainer {
-      min-width: 100px;
+    .output-box {
+      min-width: 200px;
       background: #f3f3f3;
       padding: 10px;
       border-radius: 5px;
       text-align: center;
+    }
+    h2 {
+      margin-top: 20px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
   <!-- Hero Header -->
   <header class="hero">
-    <h1>Simple API Example</h1>
-    <p>Input on the left, Button in the middle, Output on the right</p>
+    <h1>Eva je najbolja!</h1>
+    <p>Each button calls its respective API</p>
   </header>
 
-  <!-- Single-row layout for input, button, and output -->
-  <div class="container io-row">
-    <input
-      type="text"
-      id="inputField"
-      class="form-control"
-      placeholder="e.g., 2"
-    />
-    <button
-      id="apiButton"
-      class="btn btn-primary"
-    >
-      Run API
-    </button>
-    <div id="responseContainer"></div>
+  <!-- Section 1: Number Multiplier -->
+  <div class="container">
+    <h2>Number Multiplier</h2>
+    <div class="io-row">
+      <input
+        type="text"
+        id="inputField"
+        class="form-control"
+        placeholder="e.g., 2"
+      />
+      <button
+        id="apiButton"
+        class="btn btn-primary"
+      >
+        Multiply
+      </button>
+      <div id="responseContainer" class="output-box"></div>
+    </div>
+  </div>
+
+  <!-- Section 2: Haiku AI Assistant -->
+  <div class="container">
+    <h2>Haiku AI Assistant</h2>
+    <div class="io-row">
+      <input
+        type="text"
+        id="secondInput"
+        class="form-control"
+        placeholder="Enter your text"
+      />
+      <button
+        id="secondButton"
+        class="btn btn-success"
+      >
+        Generate Haiku
+      </button>
+      <div id="secondResult" class="output-box"></div>
+    </div>
   </div>
 
   <!-- Bootstrap JS (optional) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
+    // ========================
+    // Section 1: Number Multiplier API Call
+    // ========================
     document.getElementById('apiButton').addEventListener('click', () => {
       const responseContainer = document.getElementById('responseContainer');
-      responseContainer.textContent = ''; // Clear any previous result
+      responseContainer.textContent = ''; // Clear previous result
 
-      // 1. Get the value from the text input
       const userInput = document.getElementById('inputField').value.trim();
       if (!userInput) {
         alert('Please enter a number!');
         return;
       }
-      // Convert to a number
+
       const numericInput = parseFloat(userInput);
       if (isNaN(numericInput)) {
         alert('Invalid number: ' + userInput);
         return;
       }
 
-      // 2. MindStudio API call (with your full API key)
       fetch('https://api.mindstudio.ai/developer/v2/workers/run', {
         method: 'POST',
         headers: {
@@ -99,28 +127,81 @@
         },
         body: JSON.stringify({
           workerId: 'b62f2f83-fb37-433e-9143-bf208815efa9',
-          flow: 'Main.flow', // only if needed
           variables: {
-            number: numericInput
-          }
+            number: numericInput,
+          },
+          workflow: 'Main.flow',
         }),
       })
         .then(async (response) => {
           const rawBody = await response.text();
           if (!response.ok) {
-            console.error('Response status:', response.status);
-            console.error('Response body:', rawBody);
+            console.error('Number Multiplier Response Status:', response.status);
+            console.error('Number Multiplier Response Body:', rawBody);
             throw new Error('Network response was not OK: ' + response.status);
           }
           return JSON.parse(rawBody);
         })
         .then((data) => {
-          // 3. Show only the final numeric result: data.result.result.result
+          console.log('Number Multiplier API Response:', data);
           const finalNumber = data?.result?.result?.result;
           responseContainer.textContent = finalNumber ?? 'No result found!';
         })
         .catch((error) => {
-          responseContainer.textContent = 'An error occurred: ' + error.message;
+          console.error('Number Multiplier Error:', error);
+          responseContainer.textContent = 'Error: ' + error.message;
+        });
+    });
+
+    // ========================
+    // Section 2: Haiku AI API Call
+    // ========================
+    document.getElementById('secondButton').addEventListener('click', () => {
+      const secondInputVal = document.getElementById('secondInput').value.trim();
+      const secondResult = document.getElementById('secondResult');
+
+      secondResult.textContent = ''; // Clear previous result
+
+      if (!secondInputVal) {
+        alert('Please enter some text!');
+        return;
+      }
+
+      fetch('https://api.mindstudio.ai/developer/v2/workers/run', {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer skdQ3Zz6eTW8kEYIcIauWCWSa4qg6a0yY4GQaGuse6CeuKU2w80kukcoUMWQ202EUWYEWSUgmkUCEywOOiqmKssg',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          workerId: '14dde041-240f-4a1e-b429-9f8343d963aa',
+          variables: {
+            text: secondInputVal,
+            variable: 'value',
+          },
+          workflow: 'Main.flow',
+          callbackUrl: '',
+          progressUrl: '',
+          includeBillingCost: false,
+        }),
+      })
+        .then(async (response) => {
+          const rawBody = await response.text();
+          if (!response.ok) {
+            console.error('Haiku AI Response Status:', response.status);
+            console.error('Haiku AI Response Body:', rawBody);
+            throw new Error('Network response was not OK: ' + response.status);
+          }
+          return JSON.parse(rawBody);
+        })
+        .then((data) => {
+          console.log('Haiku AI API Response:', data);
+          const haiku = data?.result?.haiku;
+          secondResult.textContent = haiku ?? 'No haiku found!';
+        })
+        .catch((error) => {
+          console.error('Haiku AI Error:', error);
+          secondResult.textContent = 'Error: ' + error.message;
         });
     });
   </script>
